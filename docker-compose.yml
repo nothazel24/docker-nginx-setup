@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./docker/php-fpm/Dockerfile 
+      dockerfile: ./docker/php-fpm/Dockerfile
     image: appname-app-image:1.0
     container_name: app-name
     restart: unless-stopped
@@ -22,6 +22,12 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-root}
     networks:
       - app-network
+    #  NOTE ! : You can adjust resource limits as needed
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2048M
 
   nginx:
     image: nginx:stable-alpine
@@ -36,6 +42,11 @@ services:
       - app
     networks:
       - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128M
 
   mysql:
     image: mysql:8.0
@@ -52,6 +63,11 @@ services:
       - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:Z
     networks:
       - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2048M
 
   adminer:
     image: adminer:latest
@@ -67,6 +83,11 @@ services:
       - mysql
     networks:
       - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1' 
+          memory: 64M
 
   npm:
     image: node:20-alpine
@@ -79,6 +100,11 @@ services:
     tty: true
     networks:
       - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0' 
+          memory: 2048M
 
 volumes:
   dbdata:
